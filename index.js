@@ -1,4 +1,6 @@
 const puppeteer = require('puppeteer')
+const util = require('util')
+const fs = require('fs')
 
 const city = process.env.CITY || process.argv[2] || 'paris'
 console.log('City ==> ', city)
@@ -26,7 +28,10 @@ console.log('City ==> ', city)
 		// Pour Docker (crado)
 		if(process.env.HOME === '/home/pptruser'){
 			console.log('Using Docker')
-			options.executablePath = '/usr/local/share/.config/yarn/global/node_modules/puppeteer/.local-chromium/linux-571375/chrome-linux/chrome'
+			const dir = '/usr/local/share/.config/yarn/global/node_modules/puppeteer/.local-chromium'
+			const readdir = util.promisify(fs.readdir)
+			const chromium = await readdir(dir)
+			options.executablePath = `${dir}/${chromium[0]}/chrome-linux/chrome`
 		}
 
 		const browser = await puppeteer.launch(options)

@@ -10,9 +10,13 @@ console.log('City ==> ', city)
 
 		const options = {
 			headless: true,
+			ignoreDefaultArgs: [
+				'--disable-extensions'
+			],
 			args: [
 				'--no-sandbox',
 				'--disable-setuid-sandbox',
+				'--disable-dev-shm-usage',
 
 				// debug logging
 				'--enable-logging', '--v=1'
@@ -22,7 +26,7 @@ console.log('City ==> ', city)
 		// Pour Docker (crado)
 		if(process.env.HOME === '/home/pptruser'){
 			console.log('Using Docker')
-			options.executablePath = '/usr/local/share/.config/yarn/global/node_modules/puppeteer/.local-chromium/linux-536395/chrome-linux/chrome'
+			options.executablePath = '/usr/local/share/.config/yarn/global/node_modules/puppeteer/.local-chromium/linux-571375/chrome-linux/chrome'
 		}
 
 		const browser = await puppeteer.launch(options)
@@ -35,6 +39,7 @@ console.log('City ==> ', city)
 		await page.goto(`https://www.google.fr/search?q=meteo+${city}`, {waitUntil: 'networkidle2'})
 
 		async function screenshotDOMElement(selector, padding = 0) {
+
 			const rect = await page.evaluate(selector => {
 				const element = document.querySelector(selector);
 				const {x, y, width, height} = element.getBoundingClientRect();
@@ -52,7 +57,7 @@ console.log('City ==> ', city)
 			});
 		}
 
-		await screenshotDOMElement('.vk_c.card-section');
+		await screenshotDOMElement('.vk_c.card-section>div:last-child')
 		await browser.close()
 
 	} catch (err) {

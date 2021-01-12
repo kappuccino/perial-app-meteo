@@ -43,6 +43,16 @@ console.log('City ==> ', city)
 		console.log(`Get "${city}" weather`)
 		await page.goto(`https://www.google.fr/search?q=meteo+${city}`, {waitUntil: 'networkidle2'})
 
+		// Check GDPR cookies
+		for (const frame of page.mainFrame().childFrames()) {
+			if (frame.url().includes('consent.google')) {
+				await page.evaluate((sel) => {
+					let element = document.querySelector(sel)
+					if (element) element.remove()
+				}, '#lb')
+			}
+		}
+
 		async function screenshotDOMElement(selector, padding = 0) {
 
 			const rect = await page.evaluate(selector => {
@@ -62,7 +72,7 @@ console.log('City ==> ', city)
 			});
 		}
 
-		await screenshotDOMElement('.vk_c.card-section>div:last-child')
+		await screenshotDOMElement('#wob_wc>div:last-child')
 		await browser.close()
 
 	} catch (err) {

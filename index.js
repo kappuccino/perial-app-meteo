@@ -53,26 +53,28 @@ console.log('City ==> ', city)
 			}
 		}
 
-		async function screenshotDOMElement(selector, padding = 0) {
+		async function screenshotDOMElement(selector) {
 
 			const rect = await page.evaluate(selector => {
 				const element = document.querySelector(selector);
 				const {x, y, width, height} = element.getBoundingClientRect();
-				return {left: x, top: y, width, height, id: element.id};
+				return {left: x, top: y, width, height};
 			}, selector);
+
+			const clip =  {
+				x: rect.left,
+				y: rect.top,
+				width: rect.width,
+				height: rect.height
+			}
 
 			return await page.screenshot({
 				path: `images/meteo-${city}.png`,
-				clip: {
-					x: rect.left - padding,
-					y: rect.top - padding,
-					width: rect.width + padding * 2,
-					height: rect.height + padding * 2
-				}
+				clip
 			});
 		}
 
-		await screenshotDOMElement('#wob_wc>div:last-child')
+		await screenshotDOMElement('#wob_wc>div:last-child>div:last-child')
 		await browser.close()
 
 	} catch (err) {
